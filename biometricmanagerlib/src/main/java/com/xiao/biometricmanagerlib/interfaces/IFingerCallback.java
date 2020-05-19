@@ -1,4 +1,4 @@
-package com.xiao.biometricmanagerlib;
+package com.xiao.biometricmanagerlib.interfaces;
 
 public interface IFingerCallback {
 

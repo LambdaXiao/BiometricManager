@@ -1,7 +1,7 @@
-package com.xiao.biometricmanagerlib;
+package com.xiao.biometricmanagerlib.interfaces;
 
 import android.os.CancellationSignal;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * 指纹认证接口

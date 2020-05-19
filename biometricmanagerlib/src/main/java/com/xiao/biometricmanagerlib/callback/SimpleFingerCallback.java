@@ -1,5 +1,7 @@
-package com.xiao.biometricmanagerlib;
+package com.xiao.biometricmanagerlib.callback;
 
+
+import com.xiao.biometricmanagerlib.interfaces.IFingerCallback;
 
 public abstract class SimpleFingerCallback implements IFingerCallback {
 

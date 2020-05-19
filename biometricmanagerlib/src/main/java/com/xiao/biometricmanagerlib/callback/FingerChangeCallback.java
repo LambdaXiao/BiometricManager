@@ -1,8 +1,10 @@
-package com.xiao.biometricmanagerlib;
+package com.xiao.biometricmanagerlib.callback;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
+
+import com.xiao.biometricmanagerlib.SharePreferenceUtil;
 
 /**
  * 指纹变化监听

@@ -1,14 +1,14 @@
 package com.xiao.biometricmanager;
 
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.xiao.biometricmanagerlib.FingerChangeCallback;
+import com.xiao.biometricmanagerlib.callback.FingerChangeCallback;
 import com.xiao.biometricmanagerlib.FingerManager;
-import com.xiao.biometricmanagerlib.SimpleFingerCallback;
+import com.xiao.biometricmanagerlib.callback.SimpleFingerCallback;
 
 public class MainActivity extends AppCompatActivity {
 

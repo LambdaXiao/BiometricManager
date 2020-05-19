@@ -2,10 +2,12 @@ package com.xiao.biometricmanagerlib;
 
 import android.app.Application;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
+import com.xiao.biometricmanagerlib.callback.FingerChangeCallback;
 import com.xiao.biometricmanagerlib.dialog.BaseFingerDialog;
+import com.xiao.biometricmanagerlib.interfaces.IFingerCallback;
 
 /**
  * FingerManager的建造者类

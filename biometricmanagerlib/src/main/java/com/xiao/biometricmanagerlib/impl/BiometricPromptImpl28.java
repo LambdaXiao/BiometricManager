@@ -1,20 +1,19 @@
 package com.xiao.biometricmanagerlib.impl;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.hardware.biometrics.BiometricPrompt;
 import android.os.Build;
 import android.os.CancellationSignal;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.xiao.biometricmanagerlib.CipherHelper;
-import com.xiao.biometricmanagerlib.FingerChangeCallback;
+import com.xiao.biometricmanagerlib.callback.FingerChangeCallback;
 import com.xiao.biometricmanagerlib.FingerManagerBuilder;
-import com.xiao.biometricmanagerlib.IBiometricPrompt;
-import com.xiao.biometricmanagerlib.IFingerCallback;
+import com.xiao.biometricmanagerlib.interfaces.IBiometricPrompt;
+import com.xiao.biometricmanagerlib.interfaces.IFingerCallback;
 import com.xiao.biometricmanagerlib.SharePreferenceUtil;
 
 import javax.crypto.Cipher;

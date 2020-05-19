@@ -4,13 +4,14 @@ import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.CancellationSignal;
-import android.support.annotation.RequiresApi;
-import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.RequiresApi;
+import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.xiao.biometricmanagerlib.dialog.BaseFingerDialog;
 import com.xiao.biometricmanagerlib.impl.BiometricPromptImpl23;
 import com.xiao.biometricmanagerlib.impl.BiometricPromptImpl28;
+import com.xiao.biometricmanagerlib.interfaces.IBiometricPrompt;
 
 import javax.crypto.Cipher;
 
