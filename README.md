@@ -64,7 +64,7 @@ allprojects {
 在app下的build.gradle文件中
 
 ```
-implementation 'com.github.LambdaXiao:StockChart-MPAndroidChart:1.1'
+implementation 'com.github.LambdaXiao:BiometricManager:v1.0.0'
 ```
 
 具体使用如下：
@@ -201,6 +201,8 @@ FingerManager.build().setApplication(getApplication())
 				.setFingerDialogApi23(new MyFingerDialog())
 				.setFingerCheckCallback()
 ```
+#### 意见反馈
+如发现有错误地方欢迎指教，QQ:932599583
 
 #### 参考链接
 
