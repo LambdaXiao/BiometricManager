@@ -5,7 +5,6 @@ import android.os.Build;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import com.xiao.biometricmanagerlib.callback.FingerChangeCallback;
 import com.xiao.biometricmanagerlib.dialog.BaseFingerDialog;
 import com.xiao.biometricmanagerlib.interfaces.IFingerCallback;
 
@@ -31,9 +30,6 @@ public class FingerManagerBuilder {
 
     //指纹识别回调
     private IFingerCallback mFingerCallback;
-
-    //指纹库发生变化时的回调
-    private FingerChangeCallback mFingerChangeCallback;
 
     public FingerManagerBuilder setApplication(Application application) {
         mApplication = application;
@@ -87,15 +83,6 @@ public class FingerManagerBuilder {
 
     public IFingerCallback getFingerCallback() {
         return mFingerCallback;
-    }
-
-    public FingerManagerBuilder setFingerChangeCallback(FingerChangeCallback fingerChangeCallback) {
-        this.mFingerChangeCallback = fingerChangeCallback;
-        return this;
-    }
-
-    public FingerChangeCallback getFingerChangeCallback() {
-        return mFingerChangeCallback;
     }
 
 

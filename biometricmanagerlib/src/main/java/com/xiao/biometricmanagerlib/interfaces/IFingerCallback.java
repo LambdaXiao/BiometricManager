@@ -11,4 +11,6 @@ public interface IFingerCallback {
     void onFailed();
 
     void onCancel();
+    //监听指纹变化
+    void onChange();
 }

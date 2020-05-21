@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.xiao.biometricmanagerlib.callback.FingerChangeCallback;
 import com.xiao.biometricmanagerlib.FingerManager;
 import com.xiao.biometricmanagerlib.callback.SimpleFingerCallback;
 
@@ -40,20 +39,16 @@ public class MainActivity extends AppCompatActivity {
                                         }
 
                                         @Override
-                                        public void onError(String error) {
-                                            showToast("验证失败：" + error);
+                                        public void onFailed() {
+                                            showToast("指纹无法识别");
                                         }
 
                                         @Override
-                                        public void onFailed() {
-                                            showToast("指纹不匹配");
-                                        }
-                                    })
-                                    .setFingerChangeCallback(new FingerChangeCallback() {
-                                        @Override
-                                        protected void onFingerDataChange() {
+                                        public void onChange() {
                                             showToast("指纹数据发生了变化");
                                         }
+
+
                                     })
                                     .create()
                                     .startListener(MainActivity.this);

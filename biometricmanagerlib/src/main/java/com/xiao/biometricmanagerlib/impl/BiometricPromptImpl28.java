@@ -4,17 +4,17 @@ import android.content.DialogInterface;
 import android.hardware.biometrics.BiometricPrompt;
 import android.os.Build;
 import android.os.CancellationSignal;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.xiao.biometricmanagerlib.CipherHelper;
-import com.xiao.biometricmanagerlib.callback.FingerChangeCallback;
 import com.xiao.biometricmanagerlib.FingerManagerBuilder;
+import com.xiao.biometricmanagerlib.SharePreferenceUtil;
 import com.xiao.biometricmanagerlib.interfaces.IBiometricPrompt;
 import com.xiao.biometricmanagerlib.interfaces.IFingerCallback;
-import com.xiao.biometricmanagerlib.SharePreferenceUtil;
 
 import javax.crypto.Cipher;
 
@@ -29,7 +29,6 @@ public class BiometricPromptImpl28 implements IBiometricPrompt {
     private boolean mSelfCanceled;//用户主动取消指纹识别
     private Cipher cipher;
     private IFingerCallback mFingerCallback;
-    private FingerChangeCallback mFingerChangeCallback;
     private BiometricPrompt mBiometricPrompt;
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -37,7 +36,6 @@ public class BiometricPromptImpl28 implements IBiometricPrompt {
         this.mActivity = activity;
         this.cipher = CipherHelper.getInstance().createCipher();
         this.mFingerCallback = fingerManagerController.getFingerCallback();
-        this.mFingerChangeCallback = fingerManagerController.getFingerChangeCallback();
         //Android 9.0及以下显示系统的指纹认证对话框
         this.mBiometricPrompt = new BiometricPrompt
                 .Builder(activity)
@@ -66,8 +64,11 @@ public class BiometricPromptImpl28 implements IBiometricPrompt {
         mSelfCanceled = false;
         mCancellationSignal = cancel;
         //检测指纹库是否发生变化
-        if (CipherHelper.getInstance().initCipher(cipher) || SharePreferenceUtil.isFingerDataChange(mActivity)) {
-            mFingerChangeCallback.onChange(mActivity);
+        boolean exceptionState = CipherHelper.getInstance().initCipher(cipher);
+        boolean flag = SharePreferenceUtil.isEnableFingerDataChange(mActivity) && (exceptionState || SharePreferenceUtil.isFingerDataChange(mActivity));
+        if (flag) {
+            SharePreferenceUtil.saveFingerDataChange(mActivity, true);
+            mFingerCallback.onChange();
             return;
         }
         //开始指纹认证
@@ -95,6 +96,8 @@ public class BiometricPromptImpl28 implements IBiometricPrompt {
                         super.onAuthenticationSucceeded(result);
                         cancel.cancel();
                         mFingerCallback.onSucceed();
+                        //开启监听设备指纹数据变化
+                        SharePreferenceUtil.saveEnableFingerDataChange(mActivity, true);
                     }
 
                     @Override

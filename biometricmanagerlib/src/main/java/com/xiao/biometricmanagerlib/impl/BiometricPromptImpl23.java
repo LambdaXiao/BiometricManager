@@ -3,19 +3,19 @@ package com.xiao.biometricmanagerlib.impl;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.CancellationSignal;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.xiao.biometricmanagerlib.CipherHelper;
-import com.xiao.biometricmanagerlib.callback.FingerChangeCallback;
 import com.xiao.biometricmanagerlib.FingerManagerBuilder;
-import com.xiao.biometricmanagerlib.interfaces.IBiometricPrompt;
-import com.xiao.biometricmanagerlib.interfaces.IFingerCallback;
 import com.xiao.biometricmanagerlib.SharePreferenceUtil;
 import com.xiao.biometricmanagerlib.dialog.BaseFingerDialog;
 import com.xiao.biometricmanagerlib.dialog.DefaultFingerDialog;
+import com.xiao.biometricmanagerlib.interfaces.IBiometricPrompt;
+import com.xiao.biometricmanagerlib.interfaces.IFingerCallback;
 
 import javax.crypto.Cipher;
 
@@ -35,8 +35,6 @@ public class BiometricPromptImpl23 implements IBiometricPrompt {
 
     private IFingerCallback mFingerCallback;
 
-    private FingerChangeCallback mFingerChangeCallback;
-
     private static final String SECRET_MESSAGE = "Very secret message";
 
     public BiometricPromptImpl23(AppCompatActivity activity, BaseFingerDialog fingerDialog,
@@ -44,20 +42,23 @@ public class BiometricPromptImpl23 implements IBiometricPrompt {
         this.mActivity = activity;
         this.mCipher = CipherHelper.getInstance().createCipher();
         this.mFingerCallback = fingerManagerController.getFingerCallback();
-        this.mFingerChangeCallback = fingerManagerController.getFingerChangeCallback();
         this.mFingerDialog = fingerDialog == null ? DefaultFingerDialog.newInstance(fingerManagerController) : fingerDialog;
     }
 
     /**
      * 开始指纹认证
+     *
      * @param cancel
      */
     @Override
     public void authenticate(@NonNull final CancellationSignal cancel) {
         mSelfCanceled = false;
         //检测指纹库是否发生变化
-        if (CipherHelper.getInstance().initCipher(mCipher) || SharePreferenceUtil.isFingerDataChange(mActivity)) {
-            mFingerChangeCallback.onChange(mActivity);
+        boolean exceptionState = CipherHelper.getInstance().initCipher(mCipher);
+        boolean flag = SharePreferenceUtil.isEnableFingerDataChange(mActivity) && (exceptionState || SharePreferenceUtil.isFingerDataChange(mActivity));
+        if (flag) {
+            SharePreferenceUtil.saveFingerDataChange(mActivity, true);
+            mFingerCallback.onChange();
             return;
         }
 
@@ -110,19 +111,25 @@ public class BiometricPromptImpl23 implements IBiometricPrompt {
                         if (cipher != null) {
                             try {
                                 /*
-                                * 用于检测三星手机指纹库变化，
-                                * 三星手机指纹库发生变化后前面的initCipher检测不到KeyPermanentlyInvalidatedException
-                                * 但是cipher.doFinal(SECRET_MESSAGE.getBytes())会抛出异常
-                                * 因此以此监听三星手机的指纹库变化
+                                 * 用于检测三星手机指纹库变化，
+                                 * 三星手机指纹库发生变化后前面的initCipher检测不到KeyPermanentlyInvalidatedException
+                                 * 但是cipher.doFinal(SECRET_MESSAGE.getBytes())会抛出异常
+                                 * 因此以此监听三星手机的指纹库变化
                                  */
-                                cipher.doFinal(SECRET_MESSAGE.getBytes());
+                                //针对三星手机，开启了监听才去检测设备指纹库变化
+                                if (SharePreferenceUtil.isEnableFingerDataChange(mActivity)) {
+                                    cipher.doFinal(SECRET_MESSAGE.getBytes());
+                                }
 
                                 cancel.cancel();
                                 mFingerDialog.onSucceed();
                                 mFingerCallback.onSucceed();
+                                //开启监听设备指纹数据变化
+                                SharePreferenceUtil.saveEnableFingerDataChange(mActivity, true);
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                mFingerChangeCallback.onChange(mActivity);
+                                SharePreferenceUtil.saveFingerDataChange(mActivity, true);
+                                mFingerCallback.onChange();
                             }
                         }
                     }

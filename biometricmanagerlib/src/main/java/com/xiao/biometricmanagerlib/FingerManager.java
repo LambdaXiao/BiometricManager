@@ -4,9 +4,10 @@ import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.CancellationSignal;
+
 import androidx.annotation.RequiresApi;
-import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 
 import com.xiao.biometricmanagerlib.dialog.BaseFingerDialog;
 import com.xiao.biometricmanagerlib.impl.BiometricPromptImpl23;
@@ -89,8 +90,12 @@ public class FingerManager {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void startListener() {
-
-        CipherHelper.getInstance().createKey(mFingerManagerBuilder.getApplication(), false);
+        //如果还没有开启指纹数据变化监听，但是指纹数据已经发生了改变，就清除指纹数据变化，重新生成指纹加密库key
+        if (!SharePreferenceUtil.isEnableFingerDataChange(mFingerManagerBuilder.getApplication()) && hasFingerprintChang(mFingerManagerBuilder.getApplication())) {
+            updateFingerData(mFingerManagerBuilder.getApplication());
+        } else {
+            CipherHelper.getInstance().createKey(mFingerManagerBuilder.getApplication(), false);
+        }
 
         if (cancellationSignal == null) {
             cancellationSignal = new CancellationSignal();
@@ -110,6 +115,7 @@ public class FingerManager {
      */
     public static void updateFingerData(Context context) {
         CipherHelper.getInstance().createKey(context, true);
+        SharePreferenceUtil.saveEnableFingerDataChange(context, false);
         SharePreferenceUtil.saveFingerDataChange(context, false);
     }
 
