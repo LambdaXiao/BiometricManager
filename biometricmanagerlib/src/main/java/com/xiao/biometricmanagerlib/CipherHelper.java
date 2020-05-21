@@ -102,7 +102,7 @@ import javax.crypto.SecretKey;
                 | NoSuchAlgorithmException | InvalidKeyException e) {
 //            throw new RuntimeException("Failed to init Cipher", e);
             e.printStackTrace();
-            return false;
+            return true;
         }
     }
 
