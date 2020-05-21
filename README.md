@@ -1,4 +1,4 @@
-#### 说明
+### 说明
 指纹认证一般我们期望是这样的:
 
 1. 指纹支付可以和手指绑定，比和微信支付一样：开启时输入一个指纹，每次支付的时候只能用当时绑定的指纹支付，这样可以保证指纹安全。
@@ -21,7 +21,7 @@
 
   **综合考虑我们选择使用系统官方Api实现第二种方案，只支持所有android 6.0 以上的指纹设备**
 
-#### 效果演示
+### 效果演示
 
 1. android M
 
@@ -49,7 +49,7 @@
 
 ![](https://github.com/LambdaXiao/screenshot/raw/master/screenshots/p-change.gif)
 
-#### 快速集成
+### 快速集成
 
 在项目下的build.gradle文件中
 ```
@@ -113,7 +113,7 @@ findViewById(R.id.btn1).setOnClickListener(new View.OnClickListener() {
         });
 ```
 
-#### 支持功能
+### 支持功能
 
 1.   检查设备是否支持指纹：分为三种支持，分别是（1）设备没有指纹识别器 （2）设备有指纹识别器但是没有指纹数据（3）设备有识别器并且有指纹数据，可以进行指纹验证
 1. 　监听相应手机指纹库数据发生变化的情况
@@ -121,7 +121,7 @@ findViewById(R.id.btn1).setOnClickListener(new View.OnClickListener() {
 1. 　能够对取消指纹识别和指纹识别失败分别进行处理
 1. 　需要适配android版本，在android版本大于6.0 小于9.0 的情况下要自己实现指纹识别弹窗。在android P上要使用最新Api调用指纹识别统一弹窗
 
-#### 如何监听指纹数据变化
+### 如何监听指纹数据变化
 
 1. 创建SecretKey对当前指纹数据加密，如果在创建SecretKey后添加新指纹,则会在Cipher初始化时引发KeyPermanentlyInvalidatedException.通过这个异常我们可以知道指纹数据是否发生变化
 
@@ -179,7 +179,7 @@ findViewById(R.id.btn1).setOnClickListener(new View.OnClickListener() {
 ```
 
 
-#### 自定义android 9.0以下弹窗
+### 自定义android 9.0以下弹窗
 
 如果你想自定义android M 的指纹识别弹窗,很简单,你只需要:
 
@@ -201,10 +201,10 @@ FingerManager.build().setApplication(getApplication())
 				.setFingerDialogApi23(new MyFingerDialog())
 				.setFingerCheckCallback()
 ```
-#### 意见反馈
+### 意见反馈
 如发现有错误地方欢迎指教，QQ:932599583
 
-#### 参考链接
+### 参考链接
 
 https://github.com/googlearchive/android-FingerprintDialog
 https://android.ctolib.com/mengcuiguang-FingerDemo.html
