@@ -86,7 +86,6 @@ import javax.crypto.SecretKey;
      * @des 初始化Cipher ,根据KeyPermanentlyInvalidatedExceptiony异常判断指纹库是否发生了变化
      *
      */
-
     public boolean initCipher(Cipher cipher) {
         try {
             keyStore.load(null);
@@ -101,8 +100,9 @@ import javax.crypto.SecretKey;
             return true;
         } catch (KeyStoreException | CertificateException | UnrecoverableKeyException | IOException
                 | NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException("Failed to init Cipher", e);
-
+//            throw new RuntimeException("Failed to init Cipher", e);
+            e.printStackTrace();
+            return false;
         }
     }
 

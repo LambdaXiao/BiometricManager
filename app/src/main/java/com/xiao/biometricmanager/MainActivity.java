@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     switch (FingerManager.checkSupport(MainActivity.this)) {
                         case DEVICE_UNSUPPORTED:
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
                                     .setTitle("指纹验证")
                                     .setDes("请按下指纹")
                                     .setNegativeText("取消")
+//                                    .setFingerDialogApi23(new MyFingerDialog())//如果你需要自定义android P 以下系统弹窗就设置,注意需要继承BaseFingerDialog，不设置会使用默认弹窗
                                     .setFingerCallback(new SimpleFingerCallback() {
                                         @Override
                                         public void onSucceed() {
