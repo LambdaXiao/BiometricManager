@@ -30,6 +30,7 @@ public class BiometricPromptImpl28 implements IBiometricPrompt {
     private Cipher cipher;
     private IFingerCallback mFingerCallback;
     private BiometricPrompt mBiometricPrompt;
+    private static final String SECRET_MESSAGE = "Very secret message";
 
     @RequiresApi(Build.VERSION_CODES.P)
     public BiometricPromptImpl28(AppCompatActivity activity, FingerManagerBuilder fingerManagerController) {
@@ -94,10 +95,33 @@ public class BiometricPromptImpl28 implements IBiometricPrompt {
                     @Override
                     public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
                         super.onAuthenticationSucceeded(result);
-                        cancel.cancel();
-                        mFingerCallback.onSucceed();
-                        //开启监听设备指纹数据变化
-                        SharePreferenceUtil.saveEnableFingerDataChange(mActivity, true);
+                        Cipher cipher = result.getCryptoObject().getCipher();
+                        if (cipher != null) {
+                            try {
+                                /*
+                                 * 用于检测三星手机指纹库变化，
+                                 * 三星手机指纹库发生变化后前面的initCipher检测不到KeyPermanentlyInvalidatedException
+                                 * 但是cipher.doFinal(SECRET_MESSAGE.getBytes())会抛出异常
+                                 * 因此以此监听三星手机的指纹库变化
+                                 */
+                                //针对三星手机，开启了监听才去检测设备指纹库变化
+                                if (SharePreferenceUtil.isEnableFingerDataChange(mActivity)) {
+                                    cipher.doFinal(SECRET_MESSAGE.getBytes());
+                                }
+                                cancel.cancel();
+                                mFingerCallback.onSucceed();
+                                //开启监听设备指纹数据变化
+                                SharePreferenceUtil.saveEnableFingerDataChange(mActivity, true);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                cancel.cancel();
+
+                                SharePreferenceUtil.saveFingerDataChange(mActivity, true);
+                                mFingerCallback.onChange();
+
+                            }
+                        }
+
                     }
 
                     @Override

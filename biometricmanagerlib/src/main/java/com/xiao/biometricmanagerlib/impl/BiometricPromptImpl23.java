@@ -128,6 +128,9 @@ public class BiometricPromptImpl23 implements IBiometricPrompt {
                                 SharePreferenceUtil.saveEnableFingerDataChange(mActivity, true);
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                cancel.cancel();
+                                mFingerDialog.onError("");
+
                                 SharePreferenceUtil.saveFingerDataChange(mActivity, true);
                                 mFingerCallback.onChange();
                             }

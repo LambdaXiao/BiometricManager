@@ -6,29 +6,27 @@ import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
-import androidx.annotation.RequiresApi;
 import android.text.TextUtils;
 
+import androidx.annotation.RequiresApi;
+
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 /**
  * 指纹加密类
  */
 @RequiresApi(api = Build.VERSION_CODES.M)
- public class CipherHelper {
+public class CipherHelper {
 
     private static CipherHelper instance;
 
@@ -45,15 +43,15 @@ import javax.crypto.SecretKey;
     private CipherHelper() {
         try {
             keyStore = KeyStore.getInstance("AndroidKeyStore");
-        } catch (KeyStoreException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
             mKeyGenerator = KeyGenerator
                     .getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
-        } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
-            throw new RuntimeException("Failed to get an instance of KeyGenerator", e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -76,7 +74,7 @@ import javax.crypto.SecretKey;
             return Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
                     + KeyProperties.BLOCK_MODE_CBC + "/"
                     + KeyProperties.ENCRYPTION_PADDING_PKCS7);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -84,7 +82,6 @@ import javax.crypto.SecretKey;
 
     /**
      * @des 初始化Cipher ,根据KeyPermanentlyInvalidatedExceptiony异常判断指纹库是否发生了变化
-     *
      */
     public boolean initCipher(Cipher cipher) {
         try {
@@ -95,12 +92,15 @@ import javax.crypto.SecretKey;
             }
             cipher.init(Cipher.ENCRYPT_MODE, key);
             return false;
-        } catch (KeyPermanentlyInvalidatedException e) {
+        } catch (KeyPermanentlyInvalidatedException | UnrecoverableKeyException e) {
             //指纹库是否发生了变化,这里会抛KeyPermanentlyInvalidatedException
             return true;
-        } catch (KeyStoreException | CertificateException | UnrecoverableKeyException | IOException
+        } catch (KeyStoreException | CertificateException | IOException
                 | NoSuchAlgorithmException | InvalidKeyException e) {
 //            throw new RuntimeException("Failed to init Cipher", e);
+            e.printStackTrace();
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
             return true;
         }
@@ -113,7 +113,7 @@ import javax.crypto.SecretKey;
      */
     void createKey(Context context, boolean createNewKey) {
         if (context == null) {
-            throw new RuntimeException("context can not be null");
+            return;
         }
         SharedPreferences sharedPreferences = context.getSharedPreferences(DEFAULT_KEY_NAME, Context.MODE_PRIVATE);
         try {
@@ -134,8 +134,8 @@ import javax.crypto.SecretKey;
                 mKeyGenerator.generateKey();
                 sharedPreferences.edit().putString(HAS_FINGER_KEY, "KEY").apply();
             }
-        } catch (InvalidAlgorithmParameterException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
