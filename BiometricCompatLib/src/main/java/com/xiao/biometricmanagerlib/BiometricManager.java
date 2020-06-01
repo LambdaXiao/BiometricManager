@@ -22,30 +22,19 @@ import javax.crypto.Cipher;
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class BiometricManager {
 
-    private static BiometricManager fingerManager;
-
-    private static BiometricManagerBuilder mBiometricManagerBuilder;
-    private static AppCompatActivity mActivity;
-    private static Cipher cipher;
-    private static IFingerCallback mFingerCallback;
-    private static BiometricPrompt mBiometricPrompt;
-    private static BiometricPrompt.PromptInfo promptInfo;
-    private static Handler handler;
-    private static Executor executor;
     private static final String SECRET_MESSAGE = "Very secret message";
+    private static BiometricManager sBiometricManager;
 
-    private static BiometricManager getInstance() {
-        if (fingerManager == null) {
-            synchronized (BiometricManager.class) {
-                if (fingerManager == null) {
-                    fingerManager = new BiometricManager();
-                }
-            }
-        }
-        return fingerManager;
-    }
+    private BiometricManagerBuilder mBiometricManagerBuilder;
+    private AppCompatActivity mActivity;
+    private Cipher cipher;
+    private IFingerCallback mFingerCallback;
+    private BiometricPrompt mBiometricPrompt;
+    private BiometricPrompt.PromptInfo promptInfo;
+    private Handler handler;
+    private Executor executor;
 
-    public static BiometricManager getInstance(AppCompatActivity activity, BiometricManagerBuilder biometricManagerBuilder) {
+    private BiometricManager(AppCompatActivity activity, BiometricManagerBuilder biometricManagerBuilder) {
         mActivity = activity;
         mBiometricManagerBuilder = biometricManagerBuilder;
         mFingerCallback = mBiometricManagerBuilder.getFingerCallback();
@@ -69,7 +58,7 @@ public class BiometricManager {
         };
         promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle(mBiometricManagerBuilder.getTitle())
-                .setSubtitle(mBiometricManagerBuilder.getDes())
+//                .setSubtitle(mBiometricManagerBuilder.getDes())
                 .setNegativeButtonText(mBiometricManagerBuilder.getNegativeText())
                 .build();
 
@@ -77,20 +66,21 @@ public class BiometricManager {
             @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
-                Toast.makeText(mActivity, errString, Toast.LENGTH_SHORT).show();
-                //指纹认证失败五次会报错，会停留几秒钟后才可以重试
-                //没有按取消按钮
+                //遇到不可恢复的错误并且操作完成时调用
                 if (errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
+                    //用户主动按取消按钮
                     mFingerCallback.onCancel();
                 } else {
                     mFingerCallback.onError(errString.toString());
                 }
-
+                //由于魅族手机errorCode=7显示的errString为0，所以修改显示固定错误提示
+                Toast.makeText(mActivity, errorCode == BiometricPrompt.ERROR_LOCKOUT?mActivity.getString(R.string.try_again):errString, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
+                //识别生物特征成功时调用。
                 Cipher cipher = result.getCryptoObject().getCipher();
                 if (cipher != null) {
                     try {
@@ -120,12 +110,22 @@ public class BiometricManager {
             @Override
             public void onAuthenticationFailed() {
                 super.onAuthenticationFailed();
-                //指纹不匹配
+                //当生物识别有效但未被识别（即不匹配）时调用。
                 mFingerCallback.onFailed();
             }
         });
 
-        return getInstance();
+    }
+
+    public static BiometricManager getInstance(AppCompatActivity activity, BiometricManagerBuilder biometricManagerBuilder) {
+        if (sBiometricManager == null) {
+            synchronized (BiometricManager.class) {
+                if (sBiometricManager == null) {
+                    sBiometricManager = new BiometricManager(activity, biometricManagerBuilder);
+                }
+            }
+        }
+        return sBiometricManager;
     }
 
     public static BiometricManagerBuilder build() {

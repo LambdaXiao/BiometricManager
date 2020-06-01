@@ -2,6 +2,5 @@
     package="com.xiao.biometricmanagerlib" >
 
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
-    <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
 
 </manifest>

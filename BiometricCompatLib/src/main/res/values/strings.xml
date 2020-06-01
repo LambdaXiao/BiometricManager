@@ -5,4 +5,5 @@
     <string name="cancel">取消</string>
     <string name="retry">请重试</string>
     <string name="change_finger">换个手指试试</string>
+    <string name="try_again">尝试次数过多，请稍后重试。</string>
 </resources>
